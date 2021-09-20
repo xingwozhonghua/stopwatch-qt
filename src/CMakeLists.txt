@@ -59,6 +59,7 @@ include_directories(src)
 # 定义 source 文件
 FILE (GLOB allSource
     "./*.cpp"
+    "./*.c"
 #    "./src/application.cpp"
 #    "./src/drawshape/*.cpp"  "./src/drawshape/*.c"
 #    "./src/drawshape/drawTools/*.cpp"  "./src/drawshape/drawTools/*.c"

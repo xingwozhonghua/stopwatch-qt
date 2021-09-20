@@ -1,13 +1,15 @@
 #ifndef MAIN_WINDOW_H_
 #define MAIN_WINDOW_H_
 
-//#include <QtGui>
 #include <QThread>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 
+#include <QProcess>
+
+#include <QTextBrowser>
 #include "stopwatch.h"
 
 class MainWindow : public QWidget {
@@ -22,6 +24,8 @@ class MainWindow : public QWidget {
   void OnStartButtonCliked();
   void OnRestartButtonClicked();
   void OnStopButtonClicked();
+  void ReadBashStandardOutputInfo();
+  void ReadBashStandardErrorInfo();
 
  signals:
   void Start();
@@ -40,6 +44,11 @@ class MainWindow : public QWidget {
   QPushButton* start_button_;
   QPushButton* restart_button_;
   QPushButton* stop_button_;
+
+  QProcess* m_process_base_;
+
+  QHBoxLayout* text_browser_layout_;
+  QTextBrowser* m_text_browser_;
 };
 
 #endif /* MAIN_WINDOW_H_ */

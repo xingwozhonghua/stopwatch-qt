@@ -3,6 +3,9 @@
 #include <iomanip>
 #include <sstream>
 
+#include <QScrollBar>
+#include <QAbstractSlider>
+
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   Qt::WindowFlags m_flags = windowFlags();
   setWindowFlags(m_flags | Qt::WindowStaysOnTopHint);
@@ -22,14 +25,22 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
   stop_button_ = new QPushButton("Stop");
   restart_button_->setEnabled(false);
   stop_button_->setEnabled(false);
+
   button_layout_->addWidget(start_button_);
   button_layout_->addWidget(restart_button_);
   button_layout_->addWidget(stop_button_);
 
+  text_browser_layout_ = new QHBoxLayout;
+  m_text_browser_ = new QTextBrowser();
+  text_browser_layout_->addWidget(m_text_browser_);
+
   root_layout_->addLayout(elapsed_time_layout_);
   root_layout_->addLayout(button_layout_);
+  root_layout_->addLayout(text_browser_layout_);
 
   setLayout(root_layout_);
+
+  m_process_base_ = new QProcess(this);
 
   stopwatch_ = new Stopwatch;
   connect(start_button_, SIGNAL(clicked()), this, SLOT(OnStartButtonCliked()));
@@ -42,6 +53,10 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
           SLOT(RequestInterruption()), Qt::DirectConnection);
   connect(stopwatch_, SIGNAL(Elapsed(qint64)), this,
           SLOT(UpdateElapsedTime(qint64)));
+
+  connect(m_process_base_, SIGNAL(readyReadStandardOutput()), this, SLOT(ReadBashStandardOutputInfo()));
+  connect(m_process_base_, SIGNAL(readyReadStandardError()), this, SLOT(ReadBashStandardErrorInfo()));
+
 }
 
 void MainWindow::UpdateElapsedTime(qint64 elapsed_msec) {
@@ -66,6 +81,10 @@ void MainWindow::OnStartButtonCliked() {
     stop_button_->setEnabled(true);
     stopwatch_thread_.start();
     emit Start();
+
+    m_process_base_->start("bash");
+    m_process_base_->waitForStarted();
+    m_process_base_->write(QString("sudo libinput debug-events").toLocal8Bit()+"\n");
   }
 }
 
@@ -87,5 +106,24 @@ void MainWindow::OnStopButtonClicked() {
     stop_button_->setEnabled(false);
     emit RequestInterruption();
     stopwatch_thread_.quit();
+    m_process_base_->close();
   }
+}
+
+void MainWindow::ReadBashStandardOutputInfo() {
+    QByteArray cmdout = m_process_base_->readAllStandardOutput();
+    if(!cmdout.isEmpty()){
+        m_text_browser_->append(QString::fromLocal8Bit(cmdout));
+    }
+    QScrollBar* scroll = m_text_browser_->verticalScrollBar();
+    scroll->setSliderPosition(scroll->maximum());
+}
+
+void MainWindow::ReadBashStandardErrorInfo() {
+    QByteArray cmdout = m_process_base_->readAllStandardError();
+    if(!cmdout.isEmpty()){
+        m_text_browser_->append(QString::fromLocal8Bit(cmdout));
+    }
+    QScrollBar* scroll = m_text_browser_->verticalScrollBar();
+    scroll->setSliderPosition(scroll->maximum());
 }
