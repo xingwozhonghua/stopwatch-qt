@@ -26,6 +26,7 @@ class MainWindow : public QWidget {
   void OnStopButtonClicked();
   void ReadBashStandardOutputInfo();
   void ReadBashStandardErrorInfo();
+  void OnClearClicked();
 
  signals:
   void Start();
@@ -42,8 +43,8 @@ class MainWindow : public QWidget {
   QLabel* elapsed_time_label_;
   QHBoxLayout* button_layout_;
   QPushButton* start_button_;
-  QPushButton* restart_button_;
   QPushButton* stop_button_;
+  QPushButton* clear_button_;
 
   QProcess* m_process_base_;
 

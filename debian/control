@@ -1,0 +1,20 @@
+Source: stopwatch-libinput
+Section: utils
+Priority: optional
+Maintainer: Deepin Packages Builder <chenshijie@uniontech.com>
+Build-Depends: 
+ debhelper (>= 11),
+ qt5-qmake,
+ pkg-config,
+ cmake,
+ libgtest-dev,
+ libgmock-dev,
+Standards-Version: 0.0.1
+Homepage:  https://www.deepin.org/
+
+
+Package: stopwatch-libinput
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: stopwatch-libinput
+ stopwatch-libinput

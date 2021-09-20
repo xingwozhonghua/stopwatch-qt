@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # 设置工程名字
-project(stopwatch-qt)
+project(stopwatch-libinput)
 
 # 加速编译优化参数
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
